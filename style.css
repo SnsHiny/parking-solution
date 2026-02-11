@@ -1,0 +1,827 @@
+/* 基础样式重置 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* 字体栈 - SF-Pro风格 */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #000;
+    background-color: #fff;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* 容器 */
+.container {
+    max-width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 顶部导航栏 */
+.header {
+    padding: 16px;
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.header h1 {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #000;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: all 0.3s ease-out;
+    min-height: 44px;
+}
+
+.action-btn:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    transform: scale(0.98);
+}
+
+.btn-icon {
+    font-size: 16px;
+}
+
+.btn-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* 主内容区 */
+.main-content {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+/* 搜索栏 */
+.search-section {
+    margin-bottom: 24px;
+}
+
+.search-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+#search-input {
+    width: 100%;
+    padding: 12px 56px 12px 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    font-size: 16px;
+    background-color: rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease-out;
+}
+
+#search-input:focus {
+    outline: none;
+    border-color: #007AFF;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.search-btn {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #007AFF;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    min-height: 32px;
+}
+
+.search-btn:hover {
+    background-color: rgba(0, 122, 255, 0.1);
+}
+
+/* 区块标题 */
+.section-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #000;
+}
+
+/* 停车场列表 */
+.parking-section {
+    margin-bottom: 24px;
+}
+
+.parking-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.parking-card {
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    background-color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+}
+
+.parking-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.parking-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.parking-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.info-icon {
+    font-size: 14px;
+    min-width: 16px;
+}
+
+.parking-stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.availability {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.availability-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.availability-dot.available {
+    background-color: #34C759;
+}
+
+.availability-dot.limited {
+    background-color: #FF9500;
+}
+
+.availability-dot.full {
+    background-color: #FF3B30;
+}
+
+.availability-text {
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.price {
+    font-size: 16px;
+    font-weight: 600;
+    color: #FF3B30;
+}
+
+/* 停车记录 */
+.parking-history-section {
+    margin-bottom: 100px;
+}
+
+.parking-history {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-card {
+    padding: 16px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+    background-color: #fff;
+    transition: all 0.3s ease-out;
+}
+
+.history-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.history-card h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.history-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.history-actions {
+    display: flex;
+    gap: 8px;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.history-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #000;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease-out;
+    min-height: 44px;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.history-btn:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    transform: scale(0.98);
+}
+
+.history-btn.primary {
+    background-color: #007AFF;
+    color: #fff;
+}
+
+.history-btn.primary:hover {
+    background-color: #0056b3;
+}
+
+/* 空状态 */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 16px;
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0.02);
+    border-radius: 12px;
+    border: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+.empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.empty-state p {
+    font-size: 16px;
+    color: rgba(0, 0, 0, 0.7);
+    margin-bottom: 8px;
+}
+
+.empty-subtext {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.5);
+}
+
+/* 底部操作栏 */
+.bottom-actions {
+    padding: 16px;
+    background-color: #fff;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 12px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    z-index: 90;
+}
+
+.primary-btn {
+    flex: 2;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: #007AFF;
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease-out;
+    min-height: 44px;
+}
+
+.primary-btn:hover {
+    background-color: #0056b3;
+    transform: scale(0.98);
+}
+
+.secondary-btn {
+    flex: 1;
+    padding: 12px 16px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.05);
+    color: #000;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease-out;
+    min-height: 44px;
+}
+
+.secondary-btn:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+    transform: scale(0.98);
+}
+
+/* 模态框 */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    z-index: 200;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content {
+    background-color: #fff;
+    border-top-left-radius: 16px;
+    border-top-right-radius: 16px;
+    width: 100%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    animation: slideUp 0.3s ease-out;
+}
+
+.modal-header {
+    padding: 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.close-btn {
+    padding: 8px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: #000;
+    cursor: pointer;
+    transition: all 0.3s ease-out;
+    min-height: 32px;
+}
+
+.close-btn:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.modal-body {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+}
+
+.modal-footer {
+    padding: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 12px;
+}
+
+/* 记录表单 */
+.record-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+.form-group input {
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    font-size: 16px;
+    background-color: rgba(0, 0, 0, 0.02);
+    transition: all 0.3s ease-out;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #007AFF;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.location-info {
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    font-size: 14px;
+    background-color: rgba(0, 0, 0, 0.02);
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* 路线规划内容 */
+.route-info {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.route-step {
+    display: flex;
+    gap: 12px;
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
+.step-number {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background-color: #007AFF;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+.step-content {
+    flex: 1;
+}
+
+.step-content h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.step-content p {
+    font-size: 14px;
+    color: rgba(0, 0, 0, 0.7);
+}
+
+/* 隐藏类 */
+.hidden {
+    display: none !important;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+/* 响应式设计 */
+@media (min-width: 768px) {
+    .container {
+        max-width: 768px;
+        margin: 0 auto;
+        border-left: 1px solid rgba(0, 0, 0, 0.05);
+        border-right: 1px solid rgba(0, 0, 0, 0.05);
+    }
+
+    .bottom-actions {
+        max-width: 768px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #121212;
+        color: #fff;
+    }
+
+    .header {
+        background-color: #1c1c1c;
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .header h1 {
+        color: #fff;
+    }
+
+    .action-btn {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .action-btn:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    #search-input {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    #search-input:focus {
+        background-color: #1c1c1c;
+        border-color: #007AFF;
+    }
+
+    .section-title {
+        color: #fff;
+    }
+
+    .parking-card {
+        background-color: #1c1c1c;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .info-row {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .parking-stats {
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .history-card {
+        background-color: #1c1c1c;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .history-actions {
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .history-btn {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .history-btn:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .bottom-actions {
+        background-color: #1c1c1c;
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .secondary-btn {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+    }
+
+    .secondary-btn:hover {
+        background-color: rgba(255, 255, 255, 0.15);
+    }
+
+    .modal-content {
+        background-color: #1c1c1c;
+    }
+
+    .modal-header {
+        border-bottom-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-header h3 {
+        color: #fff;
+    }
+
+    .close-btn {
+        color: #fff;
+    }
+
+    .close-btn:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .modal-footer {
+        border-top-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .form-group label {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .form-group input {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .form-group input:focus {
+        background-color: #1c1c1c;
+        border-color: #007AFF;
+    }
+
+    .location-info {
+        background-color: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.7);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .route-step {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .step-content p {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .empty-state {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .empty-state p {
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .empty-subtext {
+        color: rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* 减少动画支持 */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+    .header {
+        border-bottom-color: #000;
+    }
+
+    .parking-card {
+        border-color: #000;
+    }
+
+    .parking-stats {
+        border-top-color: #000;
+    }
+
+    .history-card {
+        border-color: #000;
+    }
+
+    .history-actions {
+        border-top-color: #000;
+    }
+
+    .bottom-actions {
+        border-top-color: #000;
+    }
+
+    .modal-header {
+        border-bottom-color: #000;
+    }
+
+    .modal-footer {
+        border-top-color: #000;
+    }
+}
+
+/* 字体大小调整 */
+@media (max-width: 375px) {
+    body {
+        font-size: 15px;
+    }
+
+    .header h1 {
+        font-size: 18px;
+    }
+
+    .section-title {
+        font-size: 16px;
+    }
+
+    .parking-card h3 {
+        font-size: 15px;
+    }
+
+    .info-row {
+        font-size: 13px;
+    }
+
+    .primary-btn {
+        font-size: 15px;
+    }
+
+    .secondary-btn {
+        font-size: 13px;
+    }
+}

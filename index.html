@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能停车助手</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icon.png" type="image/png">
+</head>
+<body>
+    <div class="container">
+        <!-- 顶部导航栏 -->
+        <header class="header">
+            <h1>智能停车助手</h1>
+            <div class="header-actions">
+                <button id="location-btn" class="action-btn">
+                    <span class="btn-icon">📍</span>
+                    <span class="btn-text">定位</span>
+                </button>
+                <button id="settings-btn" class="action-btn">
+                    <span class="btn-icon">⚙️</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 搜索栏 -->
+            <div class="search-section">
+                <div class="search-bar">
+                    <input type="text" id="search-input" placeholder="搜索停车场、地址或目的地">
+                    <button id="search-btn" class="search-btn">
+                        <span class="btn-icon">🔍</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 停车场列表 -->
+            <div class="parking-section">
+                <h2 class="section-title">附近停车场</h2>
+                <div id="parking-list" class="parking-list">
+                    <!-- 停车场卡片将通过JavaScript动态生成 -->
+                </div>
+            </div>
+
+            <!-- 停车记录 -->
+            <div class="parking-history-section">
+                <h2 class="section-title">停车记录</h2>
+                <div id="parking-history" class="parking-history">
+                    <div class="empty-state">
+                        <span class="empty-icon">🅿️</span>
+                        <p>暂无停车记录</p>
+                        <p class="empty-subtext">停车后点击"记录位置"保存</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- 底部操作栏 -->
+        <footer class="bottom-actions">
+            <button id="navigate-btn" class="primary-btn">
+                <span class="btn-icon">🚗</span>
+                <span class="btn-text">规划路线</span>
+            </button>
+            <button id="record-btn" class="secondary-btn">
+                <span class="btn-icon">📌</span>
+                <span class="btn-text">记录位置</span>
+            </button>
+            <button id="share-btn" class="secondary-btn">
+                <span class="btn-icon">📤</span>
+                <span class="btn-text">分享</span>
+            </button>
+        </footer>
+    </div>
+
+    <!-- 停车详情模态框 -->
+    <div id="parking-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">停车场详情</h3>
+                <button id="close-modal" class="close-btn">
+                    <span class="btn-icon">✕</span>
+                </button>
+            </div>
+            <div id="modal-body" class="modal-body">
+                <!-- 详情内容将通过JavaScript动态生成 -->
+            </div>
+            <div class="modal-footer">
+                <button id="modal-navigate-btn" class="primary-btn">
+                    <span class="btn-icon">🚗</span>
+                    <span class="btn-text">导航前往</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 路线规划模态框 -->
+    <div id="route-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>最佳停车路线</h3>
+                <button id="close-route-modal" class="close-btn">
+                    <span class="btn-icon">✕</span>
+                </button>
+            </div>
+            <div id="route-body" class="modal-body">
+                <!-- 路线内容将通过JavaScript动态生成 -->
+            </div>
+            <div class="modal-footer">
+                <button id="start-navigation" class="primary-btn">
+                    <span class="btn-icon">🧭</span>
+                    <span class="btn-text">开始导航</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 记录位置模态框 -->
+    <div id="record-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>记录停车位置</h3>
+                <button id="close-record-modal" class="close-btn">
+                    <span class="btn-icon">✕</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="record-form">
+                    <div class="form-group">
+                        <label for="parking-lot-name">停车场名称</label>
+                        <input type="text" id="parking-lot-name" placeholder="请输入停车场名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="parking-space">停车位编号</label>
+                        <input type="text" id="parking-space" placeholder="请输入停车位编号">
+                    </div>
+                    <div class="form-group">
+                        <label for="parking-time">停车时间</label>
+                        <input type="datetime-local" id="parking-time">
+                    </div>
+                    <div class="form-group">
+                        <label>位置信息</label>
+                        <p id="current-location" class="location-info">获取中...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="save-record-btn" class="primary-btn">
+                    <span class="btn-icon">💾</span>
+                    <span class="btn-text">保存记录</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+    <script>
+        // 注册Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker 注册成功:', registration.scope);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker 注册失败:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>

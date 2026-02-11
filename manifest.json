@@ -1,0 +1,57 @@
+{
+  "name": "智能停车助手",
+  "short_name": "停车助手",
+  "description": "解决市区找车位难、停车场信息不透明、停车费不清晰的问题",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007AFF",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "orientation": "portrait",
+  "categories": ["navigation", "utilities", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "记录停车位置",
+      "short_name": "记录位置",
+      "description": "快速记录当前停车位置",
+      "url": "./index.html?action=record",
+      "icons": [{ "src": "icon.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "查找停车场",
+      "short_name": "找停车场",
+      "description": "快速查找附近停车场",
+      "url": "./index.html?action=find",
+      "icons": [{ "src": "icon.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    },
+    {
+      "src": "screenshot2.png",
+      "sizes": "1280x720",
+      "type": "image/png"
+    }
+  ],
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "iarc_rating_id": "",
+  "features": [
+    "地理位置",
+    "离线使用",
+    "实时停车信息"
+  ]
+}
