@@ -85,6 +85,7 @@ var parkingLots = [
 // 全局变量
 var currentLocation = { latitude: 39.9087, longitude: 116.4669 };
 var parkingHistory = JSON.parse(localStorage.getItem('parkingHistory')) || [];
+var favorites = JSON.parse(localStorage.getItem('favorites')) || [];
 var selectedParkingLot = null;
 
 // DOM元素
@@ -93,6 +94,8 @@ var parkingHistoryEl = document.getElementById('parking-history');
 var parkingModal = document.getElementById('parking-modal');
 var routeModal = document.getElementById('route-modal');
 var recordModal = document.getElementById('record-modal');
+var favoritesModal = document.getElementById('favorites-modal');
+var favoritesBody = document.getElementById('favorites-body');
 var modalTitle = document.getElementById('modal-title');
 var modalBody = document.getElementById('modal-body');
 var routeBody = document.getElementById('route-body');
@@ -101,6 +104,7 @@ var navigateBtn = document.getElementById('navigate-btn');
 var recordBtn = document.getElementById('record-btn');
 var shareBtn = document.getElementById('share-btn');
 var locationBtn = document.getElementById('location-btn');
+var favoritesBtn = document.getElementById('favorites-btn');
 var searchBtn = document.getElementById('search-btn');
 var searchInput = document.getElementById('search-input');
 
@@ -205,9 +209,22 @@ function showParkingDetails(lot) {
         evChargerHtml = '<div class="info-row"><span class="info-icon">🔋</span><span>充电桩: ' + lot.availableChargers + '/' + lot.totalChargers + ' 个可用</span></div>';
     }
     
-    modalBody.innerHTML = '<div class="parking-info"><div class="info-row"><span class="info-icon">📍</span><span>' + lot.address + '</span></div><div class="info-row"><span class="info-icon">🚶</span><span>距离 ' + lot.distance + ' 公里</span></div><div class="info-row"><span class="info-icon">🅿️</span><span>总车位: ' + lot.totalSpaces + ' 个</span></div><div class="info-row"><span class="info-icon">✅</span><span><div class="availability"><div class="availability-dot ' + availabilityClass + '"></div><span class="availability-text">' + availabilityText + '</span></div></span></div><div class="info-row"><span class="info-icon">💰</span><span> hourly rate: ¥' + lot.hourlyRate + '/小时</span></div><div class="info-row"><span class="info-icon">⏰</span><span>' + (lot.open24Hours ? '24小时开放' : '限时开放') + '</span></div>' + evChargerHtml + '<div class="info-row"><span class="info-icon">⭐</span><span>评分: ' + lot.rating + ' / 5.0</span></div></div>';
+    // 检查是否已收藏
+    var isFavorite = isParkingLotFavorited(lot.id);
+    var favoriteBtnClass = isFavorite ? 'favorite-btn active' : 'favorite-btn';
+    var favoriteBtnText = isFavorite ? '取消收藏' : '收藏';
+    var favoriteBtnIcon = isFavorite ? '❤️' : '🤍';
+    
+    modalBody.innerHTML = '<div class="parking-info"><div class="info-row"><span class="info-icon">📍</span><span>' + lot.address + '</span></div><div class="info-row"><span class="info-icon">🚶</span><span>距离 ' + lot.distance + ' 公里</span></div><div class="info-row"><span class="info-icon">🅿️</span><span>总车位: ' + lot.totalSpaces + ' 个</span></div><div class="info-row"><span class="info-icon">✅</span><span><div class="availability"><div class="availability-dot ' + availabilityClass + '"></div><span class="availability-text">' + availabilityText + '</span></div></span></div><div class="info-row"><span class="info-icon">💰</span><span> hourly rate: ¥' + lot.hourlyRate + '/小时</span></div><div class="info-row"><span class="info-icon">⏰</span><span>' + (lot.open24Hours ? '24小时开放' : '限时开放') + '</span></div>' + evChargerHtml + '<div class="info-row"><span class="info-icon">⭐</span><span>评分: ' + lot.rating + ' / 5.0</span></div></div><div class="favorite-section"><button id="favorite-btn" class="' + favoriteBtnClass + '"><span class="btn-icon">' + favoriteBtnIcon + '</span><span class="btn-text">' + favoriteBtnText + '</span></button></div>';
     
     parkingModal.classList.remove('hidden');
+    
+    // 绑定收藏按钮事件
+    document.getElementById('favorite-btn').onclick = function() {
+        toggleFavorite(lot.id);
+        // 重新显示详情，更新收藏按钮状态
+        showParkingDetails(lot);
+    };
 }
 
 // 规划路线
@@ -293,12 +310,46 @@ function saveParkingRecord() {
     setCurrentTime();
 }
 
+// 导航到停车场（使用高德地图）
+function navigateToParkingLot(parkingLot) {
+    if (!parkingLot) return;
+    
+    // 构建高德地图URL Scheme
+    var gaodeUrl = 'amapuri://route/plan?sourceApplication=parking-assistant&dlat=' + parkingLot.latitude + '&dlon=' + parkingLot.longitude + '&dname=' + encodeURIComponent(parkingLot.name) + '&dev=0&t=0';
+    
+    // 构建高德地图Web URL（作为备选）
+    var gaodeWebUrl = 'https://uri.amap.com/navigation?from=&fromname=当前位置&to=' + parkingLot.latitude + ',' + parkingLot.longitude + '&toname=' + encodeURIComponent(parkingLot.name) + '&mode=car';
+    
+    // 尝试打开高德地图APP
+    window.location.href = gaodeUrl;
+    
+    // 2秒后检查是否打开成功（如果没打开，跳转到网页版）
+    setTimeout(function() {
+        window.location.href = gaodeWebUrl;
+    }, 2000);
+}
+
 // 导航到停车位置
 function navigateToParking(recordId) {
     for (var i = 0; i < parkingHistory.length; i++) {
         var record = parkingHistory[i];
         if (record.id === recordId) {
-            alert('正在导航到 ' + record.parkingLotName + '，停车位: ' + record.parkingSpace);
+            // 查找对应的停车场
+            var parkingLot = parkingLots.find(function(lot) {
+                return lot.name === record.parkingLotName;
+            });
+            
+            if (parkingLot) {
+                navigateToParkingLot(parkingLot);
+            } else {
+                // 如果找不到对应的停车场，使用记录中的位置信息
+                var tempLot = {
+                    name: record.parkingLotName,
+                    latitude: record.location.latitude,
+                    longitude: record.location.longitude
+                };
+                navigateToParkingLot(tempLot);
+            }
             break;
         }
     }
@@ -357,6 +408,9 @@ function copyToClipboard(text) {
 // 获取当前位置
 function getCurrentLocation() {
     if (navigator.geolocation) {
+        // 显示加载状态
+        currentLocationEl.textContent = '正在获取位置...';
+        
         navigator.geolocation.getCurrentPosition(
             function(position) {
                 currentLocation = {
@@ -364,15 +418,161 @@ function getCurrentLocation() {
                     longitude: position.coords.longitude
                 };
                 reverseGeocode(currentLocation);
+                
+                // 根据真实位置更新停车场列表
+                updateParkingLotsByLocation(currentLocation);
             },
             function(error) {
                 console.error('获取位置失败:', error);
                 currentLocationEl.textContent = '无法获取位置信息';
+                
+                // 显示错误提示
+                showToast('定位失败，请检查位置权限设置');
             }
         );
     } else {
         currentLocationEl.textContent = '浏览器不支持地理位置';
+        showToast('您的浏览器不支持地理位置功能');
     }
+}
+
+// 根据位置更新停车场列表
+function updateParkingLotsByLocation(location) {
+    // 计算每个停车场到当前位置的距离
+    for (var i = 0; i < parkingLots.length; i++) {
+        var lot = parkingLots[i];
+        lot.distance = calculateDistance(
+            location.latitude, 
+            location.longitude, 
+            lot.latitude, 
+            lot.longitude
+        );
+    }
+    
+    // 根据距离排序
+    parkingLots.sort(function(a, b) {
+        return a.distance - b.distance;
+    });
+    
+    // 重新渲染停车场列表
+    renderParkingLots();
+    
+    // 显示成功提示
+    showToast('已更新附近停车场');
+}
+
+// 计算两点之间的距离（公里）
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    var R = 6371; // 地球半径（公里）
+    var dLat = deg2rad(lat2 - lat1);
+    var dLon = deg2rad(lon2 - lon1);
+    var a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    var d = R * c;
+    return Math.round(d * 10) / 10; // 保留一位小数
+}
+
+// 角度转弧度
+function deg2rad(deg) {
+    return deg * (Math.PI/180);
+}
+
+// 显示Toast提示
+function showToast(message) {
+    // 创建Toast元素
+    var toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    
+    // 添加到页面
+    document.body.appendChild(toast);
+    
+    // 显示Toast
+    setTimeout(function() {
+        toast.classList.add('show');
+    }, 10);
+    
+    // 3秒后隐藏
+    setTimeout(function() {
+        toast.classList.remove('show');
+        setTimeout(function() {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 3000);
+}
+
+// 检查停车场是否已收藏
+function isParkingLotFavorited(parkingLotId) {
+    return favorites.some(function(fav) {
+        return fav.id === parkingLotId;
+    });
+}
+
+// 切换收藏状态
+function toggleFavorite(parkingLotId) {
+    var parkingLot = parkingLots.find(function(lot) {
+        return lot.id === parkingLotId;
+    });
+    
+    if (!parkingLot) return;
+    
+    var index = favorites.findIndex(function(fav) {
+        return fav.id === parkingLotId;
+    });
+    
+    if (index === -1) {
+        // 添加到收藏
+        favorites.push(parkingLot);
+        showToast('已添加到收藏');
+    } else {
+        // 从收藏中移除
+        favorites.splice(index, 1);
+        showToast('已从收藏中移除');
+    }
+    
+    // 保存到本地存储
+    localStorage.setItem('favorites', JSON.stringify(favorites));
+}
+
+// 渲染收藏列表
+function renderFavorites() {
+    var favoritesBody = document.getElementById('favorites-body');
+    
+    if (favorites.length === 0) {
+        favoritesBody.innerHTML = '<div class="empty-state"><span class="empty-icon">❤️</span><p>暂无收藏的停车场</p><p class="empty-subtext">在停车场详情页面点击收藏按钮</p></div>';
+        return;
+    }
+    
+    favoritesBody.innerHTML = '';
+    
+    for (var i = 0; i < favorites.length; i++) {
+        var lot = favorites[i];
+        
+        var availabilityClass = 'available';
+        var availabilityText = '有' + lot.availableSpaces + '个空位';
+        if (lot.availableSpaces <= 10 && lot.availableSpaces > 0) {
+            availabilityClass = 'limited';
+            availabilityText = '仅剩' + lot.availableSpaces + '个空位';
+        } else if (lot.availableSpaces === 0) {
+            availabilityClass = 'full';
+            availabilityText = '已满';
+        }
+        
+        var favCard = document.createElement('div');
+        favCard.className = 'fav-card';
+        favCard.innerHTML = '<h3>' + lot.name + '</h3><div class="parking-info"><div class="info-row"><span class="info-icon">📍</span><span>' + lot.address + '</span></div><div class="info-row"><span class="info-icon">🚶</span><span>距离 ' + lot.distance + ' 公里</span></div><div class="info-row"><span class="info-icon">✅</span><span><div class="availability"><div class="availability-dot ' + availabilityClass + '"></div><span class="availability-text">' + availabilityText + '</span></div></span></div><div class="info-row"><span class="info-icon">💰</span><span>¥' + lot.hourlyRate + '/小时</span></div></div><div class="fav-actions"><button class="fav-btn" onclick="showParkingDetails(favorites[' + i + '])"><span class="btn-icon">ℹ️</span><span>详情</span></button><button class="fav-btn" onclick="toggleFavorite(' + lot.id + '); renderFavorites();"><span class="btn-icon">🗑️</span><span>取消收藏</span></button></div>';
+        
+        favoritesBody.appendChild(favCard);
+    }
+}
+
+// 显示收藏列表模态框
+function showFavoritesModal() {
+    renderFavorites();
+    favoritesModal.classList.remove('hidden');
 }
 
 // 反向地理编码（模拟）
@@ -425,6 +625,9 @@ function setupEventListeners() {
     document.getElementById('close-record-modal').onclick = function() {
         recordModal.classList.add('hidden');
     };
+    document.getElementById('close-favorites-modal').onclick = function() {
+        favoritesModal.classList.add('hidden');
+    };
     
     // 模态框外部点击关闭
     parkingModal.onclick = function(e) {
@@ -445,11 +648,18 @@ function setupEventListeners() {
         }
     };
     
+    favoritesModal.onclick = function(e) {
+        if (e.target === favoritesModal) {
+            favoritesModal.classList.add('hidden');
+        }
+    };
+    
     // 按钮事件
     navigateBtn.onclick = planRoute;
     recordBtn.onclick = recordParkingLocation;
     shareBtn.onclick = shareParkingInfo;
     locationBtn.onclick = getCurrentLocation;
+    favoritesBtn.onclick = showFavoritesModal;
     searchBtn.onclick = searchParkingLots;
     
     // 搜索框回车
@@ -471,7 +681,7 @@ function setupEventListeners() {
     // 开始导航
     document.getElementById('start-navigation').onclick = function() {
         routeModal.classList.add('hidden');
-        alert('正在导航到 ' + selectedParkingLot.name);
+        navigateToParkingLot(selectedParkingLot);
     };
 }
 

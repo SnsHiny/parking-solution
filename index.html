@@ -18,8 +18,8 @@
                     <span class="btn-icon">📍</span>
                     <span class="btn-text">定位</span>
                 </button>
-                <button id="settings-btn" class="action-btn">
-                    <span class="btn-icon">⚙️</span>
+                <button id="favorites-btn" class="action-btn">
+                    <span class="btn-icon">❤️</span>
                 </button>
             </div>
         </header>
@@ -150,6 +150,25 @@
                     <span class="btn-icon">💾</span>
                     <span class="btn-text">保存记录</span>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 收藏列表模态框 -->
+    <div id="favorites-modal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>收藏的停车场</h3>
+                <button id="close-favorites-modal" class="close-btn">
+                    <span class="btn-icon">✕</span>
+                </button>
+            </div>
+            <div id="favorites-body" class="modal-body">
+                <div class="empty-state">
+                    <span class="empty-icon">❤️</span>
+                    <p>暂无收藏的停车场</p>
+                    <p class="empty-subtext">在停车场详情页面点击收藏按钮</p>
+                </div>
             </div>
         </div>
     </div>
