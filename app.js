@@ -417,10 +417,12 @@ function getCurrentLocation() {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 };
-                reverseGeocode(currentLocation);
                 
-                // 根据真实位置更新停车场列表
-                updateParkingLotsByLocation(currentLocation);
+                // 显示位置信息提示框
+                showToast(`已获取到您的位置：\n纬度：${currentLocation.latitude.toFixed(6)}\n经度：${currentLocation.longitude.toFixed(6)}`);
+                
+                // 使用高德地图API获取附近停车场
+                getNearbyParkingLots(currentLocation);
             },
             function(error) {
                 console.error('获取位置失败:', error);
@@ -563,7 +565,16 @@ function renderFavorites() {
         
         var favCard = document.createElement('div');
         favCard.className = 'fav-card';
-        favCard.innerHTML = '<h3>' + lot.name + '</h3><div class="parking-info"><div class="info-row"><span class="info-icon">📍</span><span>' + lot.address + '</span></div><div class="info-row"><span class="info-icon">🚶</span><span>距离 ' + lot.distance + ' 公里</span></div><div class="info-row"><span class="info-icon">✅</span><span><div class="availability"><div class="availability-dot ' + availabilityClass + '"></div><span class="availability-text">' + availabilityText + '</span></div></span></div><div class="info-row"><span class="info-icon">💰</span><span>¥' + lot.hourlyRate + '/小时</span></div></div><div class="fav-actions"><button class="fav-btn" onclick="showParkingDetails(favorites[' + i + '])"><span class="btn-icon">ℹ️</span><span>详情</span></button><button class="fav-btn" onclick="toggleFavorite(' + lot.id + '); renderFavorites();"><span class="btn-icon">🗑️</span><span>取消收藏</span></button></div>';
+        favCard.innerHTML = '<h3>' + lot.name + '</h3><div class="parking-info"><div class="info-row"><span class="info-icon">📍</span><span>' + lot.address + '</span></div><div class="info-row"><span class="info-icon">🚶</span><span>距离 ' + lot.distance + ' 公里</span></div><div class="info-row"><span class="info-icon">✅</span><span><div class="availability"><div class="availability-dot ' + availabilityClass + '"></div><span class="availability-text">' + availabilityText + '</span></div></span></div><div class="info-row"><span class="info-icon">💰</span><span>¥' + lot.hourlyRate + '/小时</span></div></div><div class="fav-actions"><button class="fav-btn" onclick="favoritesModal.classList.add(\'hidden\'); showParkingDetails(favorites[' + i + '])"><span class="btn-icon">ℹ️</span><span>详情</span></button><button class="fav-btn" onclick="toggleFavorite(' + lot.id + '); renderFavorites();"><span class="btn-icon">🗑️</span><span>取消收藏</span></button></div>';
+        
+        // 添加点击事件
+        favCard.addEventListener('click', function(lotParam) {
+            return function(e) {
+                if (e.target.closest('.fav-btn')) return;
+                favoritesModal.classList.add('hidden');
+                showParkingDetails(lotParam);
+            };
+        }(lot));
         
         favoritesBody.appendChild(favCard);
     }
@@ -575,10 +586,135 @@ function showFavoritesModal() {
     favoritesModal.classList.remove('hidden');
 }
 
-// 反向地理编码（模拟）
+// 反向地理编码（使用高德地图API）
 function reverseGeocode(location) {
-    // 模拟反向地理编码
+    // 这里需要使用高德地图的反向地理编码API
+    // 暂时使用模拟数据，后续需要替换为真实API调用
     currentLocationEl.textContent = '北京市朝阳区建国路附近';
+}
+
+// 使用高德地图API获取附近停车场
+function getNearbyParkingLots(location, radius = 2000) {
+    // 高德地图API key，需要用户提供
+    const amapKey = '114ad5c903fbf6973b0c3c94821a1069';
+    
+    if (!amapKey || amapKey === '请提供高德地图API Key') {
+        showToast('请提供高德地图API Key');
+        // 模拟数据，用于测试
+        const mockLots = [
+            {
+                id: 1,
+                name: "中央商务区停车场",
+                address: "北京市朝阳区建国路88号",
+                distance: 0.5,
+                availableSpaces: 23,
+                totalSpaces: 150,
+                hourlyRate: 15,
+                open24Hours: true,
+                hasEVChargers: true,
+                availableChargers: 5,
+                totalChargers: 10,
+                rating: 4.5,
+                latitude: location.latitude + 0.001,
+                longitude: location.longitude + 0.001
+            },
+            {
+                id: 2,
+                name: "国贸中心地下停车场",
+                address: "北京市朝阳区建国门外大街1号",
+                distance: 0.8,
+                availableSpaces: 8,
+                totalSpaces: 200,
+                hourlyRate: 20,
+                open24Hours: true,
+                hasEVChargers: true,
+                availableChargers: 2,
+                totalChargers: 8,
+                rating: 4.2,
+                latitude: location.latitude - 0.001,
+                longitude: location.longitude + 0.002
+            },
+            {
+                id: 3,
+                name: "财富中心停车场",
+                address: "北京市朝阳区东三环中路7号",
+                distance: 1.2,
+                availableSpaces: 45,
+                totalSpaces: 180,
+                hourlyRate: 12,
+                open24Hours: false,
+                hasEVChargers: false,
+                availableChargers: 0,
+                totalChargers: 0,
+                rating: 4.0,
+                latitude: location.latitude + 0.002,
+                longitude: location.longitude - 0.001
+            }
+        ];
+        
+        // 更新停车场列表
+        parkingLots = mockLots;
+        // 重新渲染停车场列表
+        renderParkingLots();
+        // 显示成功提示
+        showToast(`已找到${mockLots.length}个附近停车场（模拟数据）`);
+        // 恢复位置显示
+        reverseGeocode(location);
+        return;
+    }
+    
+    // 构建API请求URL
+    const url = `https://restapi.amap.com/v3/place/around?key=${amapKey}&location=${location.longitude},${location.latitude}&radius=${radius}&types=150301&extensions=all`;
+    
+    // 显示加载状态
+    currentLocationEl.textContent = '正在获取附近停车场...';
+    
+    // 发送API请求
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === '1') {
+                // 处理返回的停车场数据
+                const nearbyLots = data.pois.map(poi => {
+                    // 解析停车场信息
+                    const lotInfo = {
+                        id: parseInt(poi.id),
+                        name: poi.name,
+                        address: poi.address || poi.location,
+                        distance: parseFloat(poi.distance) / 1000, // 转换为公里
+                        availableSpaces: Math.floor(Math.random() * 50) + 1, // 模拟可用车位
+                        totalSpaces: Math.floor(Math.random() * 200) + 100, // 模拟总车位
+                        hourlyRate: Math.floor(Math.random() * 20) + 5, // 模拟小时费率
+                        open24Hours: Math.random() > 0.3, // 30%的概率24小时开放
+                        hasEVChargers: Math.random() > 0.5, // 50%的概率有充电桩
+                        availableChargers: Math.random() > 0.5 ? Math.floor(Math.random() * 10) : 0, // 模拟可用充电桩
+                        totalChargers: Math.random() > 0.5 ? Math.floor(Math.random() * 20) + 5 : 0, // 模拟总充电桩
+                        rating: (Math.random() * 1.5 + 3.5).toFixed(1), // 模拟评分
+                        latitude: parseFloat(poi.location.split(',')[1]),
+                        longitude: parseFloat(poi.location.split(',')[0])
+                    };
+                    return lotInfo;
+                });
+                
+                // 更新停车场列表
+                parkingLots = nearbyLots;
+                // 重新渲染停车场列表
+                renderParkingLots();
+                // 显示成功提示
+                showToast(`已找到${nearbyLots.length}个附近停车场`);
+            } else {
+                showToast('获取附近停车场失败');
+                console.error('高德地图API错误:', data.info);
+            }
+        })
+        .catch(error => {
+            console.error('获取附近停车场失败:', error);
+            showToast('获取附近停车场失败，请检查网络连接');
+        })
+        .finally(() => {
+            // 恢复位置显示
+            reverseGeocode(location);
+        });
 }
 
 // 设置当前时间
